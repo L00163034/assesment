@@ -8,7 +8,6 @@ pipeline {
     stage('Initialize')  {
       steps {
         echo 'Initialize Steps'
-        script{deliver.sh}
         sh 'mvn -version'
       }
     }
@@ -73,7 +72,8 @@ pipeline {
 
     stage('Archive') {
       steps {
-        archiveArtifacts(allowEmptyArchive: true, artifacts: 'target/*.jar')
+        //archiveArtifacts(allowEmptyArchive: true, artifacts: 'target/*.jar')
+        echo 'archiving'
       }
     }
   }
