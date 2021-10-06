@@ -1,7 +1,3 @@
-import jenkins.model.*
-import hudson.*
-jenkins = Jenkins.instance
-
 pipeline {
   agent any
   environment {
@@ -12,7 +8,6 @@ pipeline {
     stage('Initialize')  {
       steps {
         echo 'Initialize Steps'
-        script{deliver.sh}
         sh 'mvn -version'
       }
     }
