@@ -22,7 +22,7 @@ pipeline {
     stage('Maven_Test') { 
           when {
             expression {
-              BRANCH_NAME == 'development'
+              BRANCH_NAME == 'Development'
             }
           }
 
@@ -35,7 +35,7 @@ pipeline {
       parallel {
         stage('Deploy_Development') {
           when {
-            branch 'dev'
+            branch 'Development'
           }
           
           steps {
@@ -72,8 +72,7 @@ pipeline {
 
     stage('Archive') {
       steps {
-        //archiveArtifacts(allowEmptyArchive: true, artifacts: 'target/*.jar')
-        echo 'archiving'
+        archiveArtifacts(allowEmptyArchive: true, artifacts: 'target/*.jar')
       }
     }
   }
