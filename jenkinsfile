@@ -1,15 +1,80 @@
-pipeline{
+pipeline {
   agent any
-  stages{
-    stage("build"){
-      echo 'Building the app'
-    }
-    stage("test"){
-      echo 'testing the app'
-    }
-    stage("Deploy")
-      echo 'Deploying app'
+  environment {
+    NEW_VERSION = '1.0'
   }
+  stages {
 
+    stage('Initialize')  {
+      steps {
+        echo 'Initialize Steps'
+        script{deliver.sh}
+        sh 'mvn -version'
+      }
+    }
+    stage('Build') {
+      steps {
+        echo 'maven build'
+        sh 'mvn -B -DskipTests clean package'
+        echo "Building version: ${NEW_VERSION}"
+      }
+    }
 
+    stage('Maven_Test') { 
+          when {
+            expression {
+              BRANCH_NAME == 'development'
+            }
+          }
+
+      steps {
+        sh 'mvn test'
+      }
+    }
+    stage('Deploy') {
+
+      parallel {
+        stage('Deploy_Development') {
+          when {
+            branch 'dev'
+          }
+          
+          steps {
+            echo 'Deploying in DEV with test'
+          }
+        }
+
+        stage('Deploy_Staging') {
+          when {
+            branch 'Staging'
+          }          
+          steps {
+            echo 'Deploying in Staging'
+          }
+        }
+
+        stage('Deploy_Production') {
+          when {
+            branch 'main'
+          }
+          steps {
+            echo 'Deploying in Production'
+          }
+        }
+
+      }
+    }
+
+    stage('Test') { ///  TEST WILL ONLY EXCUTE IF THE CURRENT BRANCH IS DEVELOMMENT
+      steps {
+       echo 'All tests were ok'
+      }
+    }
+
+    stage('Archive') {
+      steps {
+        archiveArtifacts(allowEmptyArchive: true, artifacts: 'target/*.jar')
+      }
+    }
+  }
 }
