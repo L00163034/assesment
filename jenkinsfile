@@ -8,6 +8,7 @@ pipeline {
     stage('Initialize')  {
       steps {
         echo 'Initialize Steps'
+        script{deliver.sh}
         sh 'mvn -version'
       }
     }
