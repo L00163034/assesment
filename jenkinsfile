@@ -1,4 +1,5 @@
 import jenkins.model.*
+import hudson.*
 jenkins = Jenkins.instance
 
 pipeline {
