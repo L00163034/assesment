@@ -29,6 +29,7 @@ pipeline {
       steps {
         sh 'mvn test'
       }
+    } 
     stage('Mega-Linter') {
       agent {
         docker {
@@ -40,8 +41,8 @@ pipeline {
         steps {
         sh '/entrypoint.sh'
         }
-}
     }
+    
     stage('Deploy') {
 
       parallel {
