@@ -29,17 +29,17 @@ pipeline {
       steps {
         sh 'mvn test'
       }
-      stage('Mega-Linter') {
-    agent {
+    stage('Mega-Linter') {
+      agent {
         docker {
             image 'nvuillam/mega-linter:v4'
             args "-e VALIDATE_ALL_CODEBASE=true -v ${WORKSPACE}:/tmp/lint --entrypoint=''"
             reuseNode true
+          }
         }
-    }
-    steps {
+        steps {
         sh '/entrypoint.sh'
-    }
+        }
 }
     }
     stage('Deploy') {
