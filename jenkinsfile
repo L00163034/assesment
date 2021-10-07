@@ -19,17 +19,42 @@ pipeline {
       }
     }
 
-    stage('Maven_Test') { 
+    stage('Testing phase'){
+
+      parallel{
+        stage('Maven_Test') { 
           when {
             expression {
               BRANCH_NAME == 'Development'
             }
           }
 
-      steps {
-        sh 'mvn test'
+        steps {
+          sh 'mvn test'
+          }
+        } 
+        stage('Mega-Linter') {
+          when {
+            expression {
+              BRANCH_NAME == 'Development'
+              }
+            }
+          agent {
+            docker {
+              image 'nvuillam/mega-linter:v4'
+              args "-e VALIDATE_ALL_CODEBASE=true -e FILEIO_REPORTER=true -e DISABLE_ERRORS=true -v ${WORKSPACE}:/tmp/lint --entrypoint=''"
+              reuseNode true
+              }
+            }
+            steps {
+              sh '/entrypoint.sh'
+            }
+        }
       }
+
     }
+    
+    
     stage('Deploy') {
 
       parallel {
@@ -64,9 +89,9 @@ pipeline {
       }
     }
 
-    stage('Test') { ///  TEST WILL ONLY EXCUTE IF THE CURRENT BRANCH IS DEVELOMMENT
+    stage('Deployment_verification') { 
       steps {
-       echo 'All tests were ok'
+       echo 'performing deployment verification'
       }
     }
 
