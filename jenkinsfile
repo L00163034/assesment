@@ -19,35 +19,48 @@ pipeline {
       }
     }
 
-    stage('Maven_Test') { 
+    stage('Testing phase'){
+
+      parallel{
+        stage('Maven_Test') { 
           when {
             expression {
-              BRANCH_NAME == 'development'
+              BRANCH_NAME == 'Development'
             }
           }
 
-      steps {
-        sh 'mvn test'
-      }
-      stage('Mega-Linter') {
-    agent {
-        docker {
-            image 'nvuillam/mega-linter:v4'
-            args "-e VALIDATE_ALL_CODEBASE=true -v ${WORKSPACE}:/tmp/lint --entrypoint=''"
-            reuseNode true
+        steps {
+          sh 'mvn test'
+          }
+        } 
+        stage('Mega-Linter') {
+          when {
+            expression {
+              BRANCH_NAME == 'Development'
+              }
+            }
+          agent {
+            docker {
+              image 'nvuillam/mega-linter:v4'
+              args "-e VALIDATE_ALL_CODEBASE=true -e FILEIO_REPORTER=true -e DISABLE_ERRORS=true -v ${WORKSPACE}:/tmp/lint --entrypoint=''"
+              reuseNode true
+              }
+            }
+            steps {
+              sh '/entrypoint.sh'
+            }
         }
+      }
+
     }
-    steps {
-        sh '/entrypoint.sh'
-    }
-}
-    }
+    
+    
     stage('Deploy') {
 
       parallel {
         stage('Deploy_Development') {
           when {
-            branch 'dev'
+            branch 'Development'
           }
           
           steps {
@@ -76,16 +89,15 @@ pipeline {
       }
     }
 
-    stage('Test') { ///  TEST WILL ONLY EXCUTE IF THE CURRENT BRANCH IS DEVELOMMENT
+    stage('Deployment_verification') { 
       steps {
-       echo 'All tests were ok'
+       echo 'performing deployment verification'
       }
     }
 
     stage('Archive') {
       steps {
-        //archiveArtifacts(allowEmptyArchive: true, artifacts: 'target/*.jar')
-        echo 'archiving'
+        archiveArtifacts(allowEmptyArchive: true, artifacts: 'target/*.jar')
       }
     }
   }
