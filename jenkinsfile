@@ -89,7 +89,7 @@ pipeline {
       }
     }
 
-    stage('Test') { ///  TEST WILL ONLY EXCUTE IF THE CURRENT BRANCH IS DEVELOMMENT
+    stage('Deployment verification') { 
       steps {
        echo 'All tests were ok'
       }
