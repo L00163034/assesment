@@ -42,7 +42,7 @@ pipeline {
           agent {
             docker {
               image 'nvuillam/mega-linter:v4'
-              args "-e VALIDATE_ALL_CODEBASE=true -e FILEIO_REPORTER=true -e DISABLE_ERRORS=true -v ${WORKSPACE}:/tmp/lint --entrypoint=''"
+              args "-e VALIDATE_ALL_CODEBASE=true -e FILEIO_REPORTER=true -e DISABLE_ERRORS=true -v ${WORKSPACE}:/tmp/lint --entrypoint=''" // notice the environmet variable "disable errors, this has been enable on purpose for demo"
               reuseNode true
               }
             }
@@ -54,7 +54,7 @@ pipeline {
 
     }
     
-    
+    // this deployment stage will depend on the branch and althougb is using a parallel statement, here is acting as a Switch.
     stage('Deploy') {
 
       parallel {
